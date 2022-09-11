@@ -1,5 +1,6 @@
 # Interrupts (x86_64 architecture)
-
+* source file: vmm-reference/src/vm-vcpu/src/x86_64/interrupts.rs 
+* Note: This document only covers the x86_64 architecture. For aarch64, the interrupt controller is called GIC (Generic Interrupt Controller). Refer to vmm-reference/src/vm-vcpu/src/aarch64/interrupts.rs
 ## Local Advanced Programmable Interrupt Controller (LAPIC)
 LAPIC is a memory-mapped device that is used to send interrupts to the VCPUs. It is used to send interrupts to the VCPUs and to receive interrupts from the VCPUs. It is also used to send inter-processor interrupts (IPIs) to the VCPUs.
 
@@ -113,4 +114,3 @@ Note: Configuring LAPICs should be done after creating `irqchip`. `irqchip` crea
    enum type `DeliveryMode` is tested for corresponding values.
 
 
-* Note: This document only covers the x86_64 architecture. For aarch64, the interrupt controller is called GIC (Generic Interrupt Controller). 
