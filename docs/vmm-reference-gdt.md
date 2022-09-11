@@ -1,11 +1,11 @@
-# [GDT](../src/vm-vcpu-ref/src/x86_64/gdt.rs)
+# [GDT](https://github.com/codenet/vmm-reference/blob/main/src/vm-vcpu-ref/src/x86_64/gdt.rs)
 
-This is breif description of file [gdt.rs](../src/vm-vcpu-ref/src/x86_64/gdt.rs)
+This is breif description of file [gdt.rs](https://github.com/codenet/vmm-reference/blob/main/src/vm-vcpu-ref/src/x86_64/gdt.rs)
 
 This module is used for building Global Descriptors Table (GDT) and writing it to Guest Memory.
 
 The module uses following crates-
-- [`kvm-bindings`](https://github.com/rust-vmm/kvm-bindings): To use `kvm_segment` struct which is the datatype of all sregs registers (cs, ds, es, fs etc.) in `KvmVcpu` (see [file](../src/vm-vcpu/src/vcpu/mod.rs))
+- [`kvm-bindings`](https://github.com/rust-vmm/kvm-bindings): To use `kvm_segment` struct which is the datatype of all sregs registers (cs, ds, es, fs etc.) in `KvmVcpu` (see [file](https://github.com/codenet/vmm-reference/blob/main/src/vm-vcpu/src/vcpu/mod.rs))
 - [`vm-memory`](https://github.com/rust-vmm/vm-memory): used when writing GDT to Guest Memory
 
 <br/><br/>
@@ -156,7 +156,7 @@ This file also provides a method `write_idt_value` to write val in the IDT Offse
 <br/><br/>
 
 ### Uses in the codebase
-This file has been used in [this file](../src/vm-vcpu/src/vcpu/mod.rs) in `configure_sregs` method of class `KvmCpu`. The modules are used for the following (in the specified order).
+This file has been used in [this file](https://github.com/codenet/vmm-reference/blob/main/src/vm-vcpu/src/vcpu/mod.rs) in `configure_sregs` method of class `KvmCpu`. The modules are used for the following (in the specified order).
 ```rs
 let gdt_table = Gdt::default();
 ```
