@@ -10,6 +10,8 @@ pub fn s3_download(r_type: &str, r_tags: Option<&str>) -> Result<PathBuf, Error>
 
 2. `r_tags`: Optional tags to filter the resources for example: "halt-after-boot: true",  "image format: elf" etc.
 
+3. `Result<PathBuf, Error>`: Result<T,E> is a type that returns type T value on success, type E error otherwise. 
+
 <br>
 
 ```rs
