@@ -5,15 +5,27 @@ LAPIC is a memory-mapped device that is used to send interrupts to the VCPUs. It
 
 There are five delivery modes for interrupts:
 * Fixed: The interrupt is sent to a specific VCPU.
-* SMI: System Management Interrupt. It is used to notify the hypervisor that a VCPU has entered SMM.
-* NMI: Non-Maskable Interrupt. It is used to notify the hypervisor that a VCPU has entered NMI.
+* SMI: System Management Interrupt.
+* NMI: Non-Maskable Interrupt. 
 * INIT: It is used to initialize the VCPU.
 * ExtINT: External Interrupt. Causes the processor to respond to the interrupt as if the interrupt originated in an 
 externally connected 
 
+Structure of 32-bit register `LVT` (Local Vector Table):
+* 8-bit vector
+* 3-bit delivery mode
+
+31 | 17 | 16 | 14 | 13 | 12 | 11 | 10 | 7 | 0
+--- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+Reserved | Mask | Trigger Mode | Remote | interrupt input pin polarity | Delivery Status | Reserved | Delivery Mode | Vector 
+
 Refer to the [LAPIC documentation ](https://www.intel.com/content/dam/support/us/en/documents/processors/pentium4/sb/25366821.pdf) in intel's manual for more details. Figure 8.8 on Vol. 3A 8-17 shows the local vector table structure.
 
-The function `set_klapic_delivery_mode` sets the delivery mode from available delivery modes: `Fixed`, `SMI`, `NMI`, `INIT`, `ExtINT`. 
+The function `set_klapic_delivery_mode` sets the delivery mode from available delivery modes: `Fixed`, `SMI`, `NMI`, `INIT`, `ExtINT`. It uses `set_apic_delivery_mode` to get a `LVT` register and sets the delivery mode in it. The function takes 32 bit `reg` and `mode`. `mode` is shifted 8 bits to the left to place it at 11:8 bits and then last 8 bits of `reg` are ORed with `mode` to take only the last 8 bits of `reg`. The `LVT` structure looks as follows:
+
+31 | 17 | 16 | 14 | 13 | 12 | 11 | 10 | 7 | 0
+--- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+00000000000000 | 0 | 00 | 0 | 0 | 0 | 0 | DELIVERY MODE | VECTOR 
 
 There are two helper functions defined to read and write to the LAPIC registers. The `read_le_i32` function reads from the LAPIC register at the given offset and returns the value read. 
 ```rust
@@ -62,6 +74,17 @@ pub fn set_klapic_reg(klapic: &mut kvm_lapic_state, reg_offset: usize, value: i3
     Ok(())
 }
 ```
+## Error Handling
+There is only one error defined as `InvalidRegisterOffset` and is returned when the register offset is invalid. The check is done after accessing registers and error is returned in case of invalid register offset. 
+```rust
+#[derive(Debug, PartialEq, thiserror::Error)]
+pub enum Error {
+    /// The register offset is invalid.
+    #[error("The register offset is invalid.")]
+    InvalidRegisterOffset,
+}
+```
+
 ## Usage in code
 
 While creating a new ```kvmVcpu```, LAPICs for the vcpu is created and initialized with ```configure_lapic``` function. The function ```configure_lapic``` initializes the LAPICs with the following values: 
@@ -90,4 +113,4 @@ Note: Configuring LAPICs should be done after creating `irqchip`. `irqchip` crea
    enum type `DeliveryMode` is tested for corresponding values.
 
 
-* Note: This document only covers the x86_64 architecture. For aaarch64, the interrupt controller is called GIC (Generic Interrupt Controller). 
+* Note: This document only covers the x86_64 architecture. For aarch64, the interrupt controller is called GIC (Generic Interrupt Controller). 
