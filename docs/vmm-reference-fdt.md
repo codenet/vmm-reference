@@ -5,7 +5,7 @@ VMM keeps track of the virtio devices  in a data structure called Flatenned Devi
 This arrangement provides an abstracts out the hardware specifications from the code.
 
 ## Implementation
-The implementation of the FDT in vmm-reference is done using rust crate vm_fdt and vm_memory so are the following import statements.
+The implementation of the FDT for arm64 architecture in vmm-reference is done using rust crate vm_fdt and vm_memory so are the following import statements.
 ```rs
 pub use vm_fdt::{Error as FdtError, FdtWriter};
 use vm_memory::{guest_memory::Error as GuestMemoryError, Bytes, GuestAddress, GuestMemory};
@@ -42,3 +42,26 @@ struct DeviceInfo {
 ```
 
 FdtBuilder implementation provides with methods to create a new node in te FDT and then configure that node. It also provides methods to query number of virtio devices in that node and add or a device to them.
+
+Fdt struct is a vector of 8-bit unsigned integers
+```rs
+pub struct Fdt {
+    fdt_blob: Vec<u8>,
+}
+```
+while implementaion fpr Fdt includes method which writes this fdt_blob as slice in the guest memory.
+
+```rs
+impl Fdt {
+    pub fn write_to_mem<T: GuestMemory>(&self, guest_mem: &T, fdt_load_offset: u64) -> Result<()> {
+        let fdt_address = GuestAddress(AARCH64_PHYS_MEM_START + fdt_load_offset);
+        guest_mem.write_slice(self.fdt_blob.as_slice(), fdt_address)?;
+        Ok(())
+    }
+}
+```
+
+Further we are provided with functions to create all the reuired types of nodes with thier neccessory configurations. THe supported types of nodes include chosen node, memory node, cpu node, gic (Generic Interrupt Controller) node, psci (Power State Coordination Interface) node, serial node, timer node, pmu (Performance Monitor Unit) node, rtc (Real Time Clock) node and virtio node.
+
+## Unit Testing
+Testing includes creating a new FdtBuilder object and then check creating fdt without specifying one of the configurations required. In the case when that left out configuration in neccessory we should get MissingRequiredConfig error.
