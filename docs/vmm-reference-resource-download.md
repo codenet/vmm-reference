@@ -1,6 +1,15 @@
 # [Resource Download](/vmm-reference/src/utils/src/resource_download.rs)
 
-`resource_download.rs` calls [s3_download.py](/vmm-reference/tests/tools/s3_download.py) to download a resource from resource_manifest.json
+`resource_download.rs` calls [s3_download.py](/vmm-reference/tests/tools/s3_download.py) to download a resource from resource_manifest.json, which can be found in /vmm-reference/tests/tools/s3 folder.
+
+```rs
+pub enum Error {
+    DownloadError(String),
+}
+```
+Defining an enum for DownloadError that would be used to return error value in case resource download fails. 
+
+<br>
 
 ``` rs
 pub fn s3_download(r_type: &str, r_tags: Option<&str>) -> Result<PathBuf, Error>
@@ -48,11 +57,11 @@ pub fn s3_download(r_type: &str, r_tags: Option<&str>) -> Result<PathBuf, Error>
 
 1. `dld_script`: variable to store the relative path to s3_download.py
 
-2. `output`: store the output of the command run to download resources of the given type and according to the given tags
+2. `output`: store the output of the command run to download resources of the given type and according to the given tags, `Command` is an rust api for a process builder.
 
 3. if the download fails for some reason the function returns the error received
 
-4. if the download is a success the function returns the path of the result
+4. if the download is a success the function returns the path of the resultant image, the path can be used to run the image. `PathBuf` is a rust struct to store mutable paths which can be dereferenced.
 
 <br>
 
