@@ -16,7 +16,7 @@ pub struct SegmentDescriptor(pub u64);
 ```
 SegmentDescriptor is the class to create GDT entries and export them as `kvm_segment`. 
 
-The segment has following structure (from Section "3.4.5 Segment Descriptors" of the [Intel Manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3a-part-1-manual.pdf))
+The segment descriptor has following structure (from Section "3.4.5 Segment Descriptors" of the [Intel Manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3a-part-1-manual.pdf))
 ![Segment Descriptor](seg_desc.png)
 <br/><br/>
 
@@ -73,7 +73,9 @@ This method creates a `kvm_segment` from `SegmentDescriptor` object.
 
 All the fields are the same as the segment descriptor except for `selector` and `unusable`.
 
-- `selector` stores the 16 bit segment selector value. First 13 bits are index of the entry in GDT table and last 3 bits are flags which are set to 0 here.
+- `selector` stores the 16 bit segment selector value. First 13 bits are index of the entry in GDT table and last 3 bits are flags (TI and RPL) which are set to 0 here.
+  - TI specifies which descriptor table to use. It's set if LDT (Local Descriptor Table) is used.
+  - RPL is requested Privilege Level of the selector.
 - If the entry is not present then it is `unusable`.
 <br/><br/>
 
@@ -103,7 +105,7 @@ pub fn try_push(&mut self, entry: SegmentDescriptor) -> Result<()> {
     Ok(())
 }
 ```
-This method tries to push an entry (`SegmentDescriptor` object) to the GDT and is successful if the size of GDT is less than `MAX_GDT_SIZE`.
+This method tries to push an entry (`SegmentDescriptor` object) to the GDT and is successful if the size of GDT is less than `MAX_GDT_SIZE` (set to 2<sup>13</sup>).
 <br/><br/>
 
 ### `create_kvm_segment_for`
@@ -128,7 +130,7 @@ pub fn write_to_mem<Memory: GuestMemory>(&self, mem: &Memory) -> Result<()> {
     Ok(())
 }
 ```
-This method writes the GDT into the Guest Memory with GDT base at address `BOOT_GDT_OFFSET` which is a constant that equals `0x500`.
+This method writes the GDT into the Guest Memory with GDT base at address `BOOT_GDT_OFFSET` (equals `0x500`).
 <br/><br/>
 
 ### Default GDT
@@ -148,7 +150,7 @@ fn default() -> Self {
 <br/><br/>
 
 ## IDT
-This file also provides a method `write_idt_value` to write val in the IDT Offse which is constant with value `0x520`.
+This file also provides a method `write_idt_value` to write val in the IDT Offset (equals `0x520`).
 <br/><br/>
 
 <br/><br/>
