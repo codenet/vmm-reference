@@ -55,3 +55,8 @@ For transmission, it gets the descriptors chain by iterating over the `txq`. Her
 It iterates over chain to read data from guest address space into `txbuf`. Using `txbuf` it further writes data into tap device. 
 <hr>
 
+## Resources for more understanding
+
+- https://github.com/rust-vmm/vm-virtio/blob/main/crates/virtio-queue/README.md
+
+
