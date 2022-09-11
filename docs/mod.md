@@ -110,7 +110,7 @@ pub struct NetConfig {
 }
 ```
 
-The NetConfig struct stores pub path, which is the path to block device. Then gets these three attributes by passing 'path' as parameter to 'value_of' method in 'try_from' method.
+The BlockConfig struct stores pub path, which is the path to block device. Then gets these three attributes by passing 'path' as parameter to 'value_of' method in 'try_from' method.
 ```rs
 pub struct BlockConfig {
     /// Path to the block device backend.
