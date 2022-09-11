@@ -1,16 +1,16 @@
 # [Flatenned Device Tree](../src/arch/src/lib.rs)
 
 ## Description
->VMM keeps track of the virtio devices  in a data structure called Flatenned Device Tree. FDT as the name suggests is a Tree where each node is a device or collection of devices. There can be different types of nodes in the FDT which can be identified using the attributes of the node. Each node contains a key-value pair mapping which determine the type of the node and configuration of that node.
+VMM keeps track of the virtio devices  in a data structure called Flatenned Device Tree. FDT as the name suggests is a Tree where each node is a device or collection of devices. There can be different types of nodes in the FDT which can be identified using the attributes of the node. Each node contains a key-value pair mapping which determine the type of the node and configuration of that node.
 This arrangement provides an abstracts out the hardware specifications from the code.
 
 ## Implementation
->The implementation of the FDT for arm64 architecture in `vmm-reference` is done using rust crate `vm_fdt` and `vm_memory` so are the following import statements.
+The implementation of the FDT for arm64 architecture in `vmm-reference` is done using rust crate `vm_fdt` and `vm_memory` so are the following import statements.
 ```rs
 pub use vm_fdt::{Error as FdtError, FdtWriter};
 use vm_memory::{guest_memory::Error as GuestMemoryError, Bytes, GuestAddress, GuestMemory};
 ```
->Then some constants are set up which include the max size of the FDT, start of DRAM in physical address space, base for MMIO and AXI ports and set up the virtual `Generic Interrupt Controller`.\
+Then some constants are set up which include the max size of the FDT, start of DRAM in physical address space, base for MMIO and AXI ports and set up the virtual `Generic Interrupt Controller`.\
 Then the Error handler is set up with default error handler of both vm_memory and vm_fdt crates in addition to a error handler for cases of missing required configuration.
 ```rs
 #[derive(Debug)]
@@ -61,7 +61,17 @@ impl Fdt {
 }
 ```
 
->Further we are provided with functions to create all the reuired types of nodes with thier neccessory configurations. THe supported types of nodes include chosen node, memory node, cpu node, gic (Generic Interrupt Controller) node, psci (Power State Coordination Interface) node, serial node, timer node, pmu (Performance Monitor Unit) node, rtc (Real Time Clock) node and virtio node.
+Further we are provided with functions to create all the reuired types of nodes with thier neccessory configurations. THe supported types of nodes include chosen node, memory node, cpu node, gic (Generic Interrupt Controller) node, psci (Power State Coordination Interface) node, serial node, timer node, pmu (Performance Monitor Unit) node, rtc (Real Time Clock) node and virtio node.\
+For example to create a chosen node, which does not represent a device but serves in passing arguments between firmware and operating system, is createdd as follows.
+```rs
+fn create_chosen_node(fdt: &mut FdtWriter, cmdline: &str) -> Result<()> {
+    let chosen_node = fdt.begin_node("chosen")?;
+    fdt.property_string("bootargs", cmdline)?;
+    fdt.end_node(chosen_node)?;
+
+    Ok(())
+}
+```
 
 ## Unit Testing
->Testing includes creating a new FdtBuilder object and then check creating fdt without specifying one of the configurations required. In the case when that left out configuration in neccessory we should get MissingRequiredConfig error.
+Testing includes creating a new FdtBuilder object and then check creating fdt without specifying one of the configurations required. In the case when that left out configuration in neccessory we should get MissingRequiredConfig error.
