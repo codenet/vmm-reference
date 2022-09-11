@@ -1,8 +1,8 @@
 # [Flatenned Device Tree](../src/arch/src/lib.rs)
 
 ## Description
-VMM keeps track of the virtio devices  in a data structure called Flatenned Device Tree. FDT as the name suggests is a Tree where each node is a device or collection of devices. There can be different types of nodes in the FDT which can be identified using the attributes of the node. Each node contains a key-value pair mapping which determine the type of the node and configuration of that node.
-This arrangement provides an abstracts out the hardware specifications from the code.
+VMM keeps track of the virtio devices  in a data structure called Flatenned Device Tree. FDT as the name suggests is a Tree where each node is a device or collection of devices. There can be different types of nodes in the FDT which can be identified using the attributes of the node. Each node contains a key-value pair mapping which determine the type of the node and configuration of that node.\
+This arrangement abstracts out the hardware specifications from the code and the makes the code shareable while making the hardware specifications more accesible and uniform. Arrangement of the hardware resources in the form of the tree also helps in easier reolution of resource ownership.
 
 ## Implementation
 The implementation of the FDT for arm64 architecture in `vmm-reference` is done using rust crate `vm_fdt` and `vm_memory` so are the following import statements.
@@ -74,4 +74,5 @@ fn create_chosen_node(fdt: &mut FdtWriter, cmdline: &str) -> Result<()> {
 ```
 
 ## Unit Testing
-Testing includes creating a new FdtBuilder object and then check creating fdt without specifying one of the configurations required. In the case when that left out configuration in neccessory we should get MissingRequiredConfig error.
+Testing includes creating a new FdtBuilder object and then check creating fdt without specifying one of the configurations required. In the case when that left out configuration in neccessory we should get MissingRequiredConfig error. \
+The addition of new virtio device in a node is also tested. 
